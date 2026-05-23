@@ -1065,10 +1065,7 @@
         ],
         ["match", ["get", "brunnel"], ["bridge", "tunnel"], false, true],
         ["match", ["get", "class"], ["path", "pedestrian"], true, false],
-        ["!", ["all",
-          ["match", ["get", "subclass"], ["path", "footway"], true, false],
-          ["match", ["get", "surface"], ["unpaved"], true, false]
-        ]]
+        ["match", ["get", "surface"], ["paved"], true, false]
       ],
       "layout": {"line-join": "round"},
       "paint": {
@@ -1102,8 +1099,7 @@
         ],
         ["match", ["get", "brunnel"], ["bridge", "tunnel"], false, true],
         ["match", ["get", "class"], ["path", "pedestrian"], true, false],
-        ["match", ["get", "subclass"], ["path", "footway"], true, false],
-        ["match", ["get", "surface"], ["unpaved"], true, false]
+        ["match", ["get", "surface"], ["paved"], false, true]
       ],
       "layout": {"line-join": "round"},
       "paint": {
@@ -1136,8 +1132,7 @@
         ],
         ["match", ["get", "brunnel"], ["bridge", "tunnel"], false, true],
         ["match", ["get", "class"], ["path", "pedestrian"], true, false],
-        ["match", ["get", "subclass"], ["path", "footway"], true, false],
-        ["match", ["get", "surface"], ["unpaved"], true, false]
+        ["match", ["get", "surface"], ["paved"], false, true]
       ],
       "layout": {"line-join": "round"},
       "paint": {
