@@ -4,6 +4,18 @@
     "openmaptiles": {
       "type": "vector",
       "url": "https://gpxstudio.xyz/openmaptiles.json"
+    },
+    "hillshading": {
+        "type": "vector",
+        "tiles": ["http://localhost:8080/hillshading/{z}/{x}/{y}.mvt"],
+        "minzoom": 4,
+        "maxzoom": 12
+    },
+    "contours_m": {
+        "type": "vector",
+        "tiles": ["http://localhost:8080/contours_m/{z}/{x}/{y}.mvt"],
+        "minzoom": 4,
+        "maxzoom": 12
     }
   },
   "sprite": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm",
@@ -103,6 +115,50 @@
         "fill-pattern": "wetland_bg_11",
         "fill-translate-anchor": "map"
       }
+    },
+    {
+        "id": "hillshading",
+        "type": "fill",
+        "source": "hillshading",
+        "source-layer": "hillshading",
+        "paint": {
+            "fill-color": "#bdbdbd",
+            "fill-opacity": 0.2
+        }
+    },
+    {
+        "id": "contours_index_m",
+        "type": "line",
+        "source": "contours_m",
+        "source-layer": "contours_m",
+        "filter": [
+            "any",
+            ["all", ["<=", ["zoom"], 11], ["==", ["%", ["get", "ele"], 500], 0]],
+            ["all", ["==", ["zoom"], 12], ["==", ["%", ["get", "ele"], 250], 0]],
+            ["all", [">=", ["zoom"], 13], ["==", ["%", ["get", "ele"], 100], 0]]
+        ],
+        "paint": {
+            "line-color": "rgb(124, 122, 121)",
+            "line-opacity": 0.1,
+            "line-width": 1.0
+        }
+    },
+    {
+        "id": "contours_m",
+        "type": "line",
+        "source": "contours_m",
+        "source-layer": "contours_m",
+        "filter": [
+            "any",
+            ["all", ["<=", ["zoom"], 11], ["==", ["%", ["get", "ele"], 100], 0]],
+            ["all", ["==", ["zoom"], 12], ["==", ["%", ["get", "ele"], 50], 0]],
+            ["all", [">=", ["zoom"], 13], ["==", ["%", ["get", "ele"], 25], 0]]
+        ],
+        "paint": {
+            "line-color": "rgb(126, 124, 121)",
+            "line-opacity": 0.3,
+            "line-width": 0.5
+        }
     },
     {
       "id": "landuse_pitch",
@@ -2185,6 +2241,34 @@
         "line-dasharray": [1, 2],
         "line-width": ["interpolate", ["linear"], ["zoom"], 3, 1, 5, 1.2, 12, 3]
       }
+    },
+    {
+        "id": "contours_label_m",
+        "type": "symbol",
+        "source": "contours_m",
+        "source-layer": "contours_m",
+        "filter": [
+            "any",
+            ["all", ["<=", ["zoom"], 11], ["==", ["%", ["get", "ele"], 500], 0]],
+            ["all", ["==", ["zoom"], 12], ["==", ["%", ["get", "ele"], 250], 0]],
+            ["all", ["==", ["zoom"], 13], ["==", ["%", ["get", "ele"], 100], 0]],
+            ["all", [">=", ["zoom"], 14], ["==", ["%", ["get", "ele"], 50], 0]]
+        ],
+        "layout": {
+            "text-size": ["interpolate", ["linear"], ["zoom"], 11, 6, 18, 10],
+            "text-allow-overlap": false,
+            "symbol-avoid-edges": true,
+            "text-ignore-placement": false,
+            "symbol-placement": "line",
+            "text-rotation-alignment": "map",
+            "text-field": "{ele}m",
+            "text-padding": 0
+        },
+        "paint": {
+            "text-color": "#5c5c5c",
+            "text-halo-color": "rgba(255,255,255,0.85)",
+            "text-halo-width": 1.25
+        }
     },
     {
       "id": "waterway_line_label",
