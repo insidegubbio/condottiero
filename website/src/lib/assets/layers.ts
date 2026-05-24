@@ -28,11 +28,13 @@ import ignFrPlan from './custom/ign-fr-plan.json';
 import ignFrSatellite from './custom/ign-fr-satellite.json';
 import bikerouterGravel from './custom/bikerouter-gravel.json';
 import topo from './custom/topo.json';
+import satellite from './custom/satellite.json';
 
 export const maptilerKeyPlaceHolder = 'MAPTILER_KEY';
 
 export const basemaps: { [key: string]: string | StyleSpecification } = {
     topo: topo as StyleSpecification,
+    satellite: satellite as StyleSpecification,
     maptilerStreets: `https://api.maptiler.com/maps/streets-v4/style.json?key=${maptilerKeyPlaceHolder}`,
     maptilerTopo: `https://api.maptiler.com/maps/topo-v4/style.json?key=${maptilerKeyPlaceHolder}`,
     maptilerOutdoors: `https://api.maptiler.com/maps/outdoor-v4/style.json?key=${maptilerKeyPlaceHolder}`,
@@ -802,6 +804,7 @@ export const basemapTree: LayerTreeType = {
     basemaps: {
         world: {
             topo: true,
+            satellite: true,
             maptilerStreets: true,
             maptilerTopo: true,
             maptilerOutdoors: true,
@@ -1029,6 +1032,7 @@ export const defaultBasemapTree: LayerTreeType = {
     basemaps: {
         world: {
             topo: true,
+            satellite: true,
             maptilerStreets: true,
             maptilerTopo: true,
             maptilerOutdoors: true,
