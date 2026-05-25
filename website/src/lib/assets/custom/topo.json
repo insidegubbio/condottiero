@@ -3,7 +3,7 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "https://gpxstudio.xyz/openmaptiles.json"
+      "url": "https://tiles.gpx.studio/openmaptiles.json"
     },
     "hillshading": {
         "type": "vector",

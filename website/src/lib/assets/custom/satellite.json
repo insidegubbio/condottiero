@@ -3,7 +3,7 @@
   "sources": {
     "openmaptiles": {
       "type": "vector",
-      "url": "https://gpxstudio.xyz/openmaptiles.json"
+      "url": "https://tiles.gpx.studio/openmaptiles.json"
     },
     "maptiler": {
       "url":"https://api.maptiler.com/tiles/satellite-v2/tiles.json?key=MAPTILER_KEY",
