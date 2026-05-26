@@ -1698,7 +1698,12 @@
       "layout": {
         "icon-image": "mountain_11",
         "text-anchor": "top",
-        "text-field": ["get", "name"],
+        "text-field": [
+          "case",
+          ["has", "name:nonlatin"],
+          ["concat", ["get", "name:latin"], " ", ["get", "name:nonlatin"]],
+          ["coalesce", ["get", "name_en"], ["get", "name"]]
+        ],
         "text-font": ["Noto Sans Regular"],
         "text-max-width": 9,
         "text-offset": [0, 0.6],
@@ -1727,7 +1732,12 @@
       "layout": {
         "icon-image": "attraction_11",
         "text-anchor": "top",
-        "text-field": ["get", "name"],
+        "text-field": [
+          "case",
+          ["has", "name:nonlatin"],
+          ["concat", ["get", "name:latin"], " ", ["get", "name:nonlatin"]],
+          ["coalesce", ["get", "name_en"], ["get", "name"]]
+        ],
         "text-font": ["Noto Sans Regular"],
         "text-max-width": 9,
         "text-offset": [0, 0.6],

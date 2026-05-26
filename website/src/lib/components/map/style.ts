@@ -233,12 +233,13 @@ export class StyleManager {
                 const textField = layer.layout['text-field'];
                 if (
                     Array.isArray(textField) &&
-                    textField.length >= 2 &&
-                    textField[0] === 'coalesce' &&
-                    Array.isArray(textField[1]) &&
-                    textField[1][0] === 'get' &&
-                    typeof textField[1][1] === 'string' &&
-                    textField[1][1].startsWith('name')
+                    textField.length == 4 &&
+                    Array.isArray(textField[3]) &&
+                    textField[3][0] === 'coalesce' &&
+                    Array.isArray(textField[3][1]) &&
+                    textField[3][1][0] === 'get' &&
+                    typeof textField[3][1][1] === 'string' &&
+                    textField[3][1][1].startsWith('name')
                 ) {
                     layer.layout['text-field'] = [
                         'coalesce',
