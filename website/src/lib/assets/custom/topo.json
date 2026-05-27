@@ -6,22 +6,22 @@
       "url": "https://tiles.gpx.studio/openmaptiles.json"
     },
     "hillshading": {
-        "type": "vector",
-        "tiles": ["http://localhost:8080/hillshading/{z}/{x}/{y}.mvt"],
-        "minzoom": 4,
-        "maxzoom": 12
+      "type": "vector",
+      "tiles": ["https://tiles.gpx.studio/hillshading/{z}/{x}/{y}.mvt"],
+      "minzoom": 4,
+      "maxzoom": 12
     },
     "contours_m": {
-        "type": "vector",
-        "tiles": ["http://localhost:8080/contours_m/{z}/{x}/{y}.mvt"],
-        "minzoom": 4,
-        "maxzoom": 12
+      "type": "vector",
+      "tiles": ["https://tiles.gpx.studio/contours_m/{z}/{x}/{y}.mvt"],
+      "minzoom": 11,
+      "maxzoom": 12
     },
     "contours_ft": {
-        "type": "vector",
-        "tiles": ["http://localhost:8080/contours_ft/{z}/{x}/{y}.mvt"],
-        "minzoom": 4,
-        "maxzoom": 12
+      "type": "vector",
+      "tiles": ["https://tiles.gpx.studio/contours_ft/{z}/{x}/{y}.mvt"],
+      "minzoom": 11,
+      "maxzoom": 12
     }
   },
   "sprite": "https://tiles.openfreemap.org/sprites/ofm_f384/ofm",

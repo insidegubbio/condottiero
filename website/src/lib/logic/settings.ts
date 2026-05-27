@@ -210,7 +210,7 @@ type RoutingProfile =
     | 'motorcycle'
     | 'water'
     | 'railway';
-type TerrainSource = 'maptiler-dem' | 'mapterhorn';
+type TerrainSource = 'mapterhorn';
 type StreetViewSource = 'mapillary' | 'google';
 
 export const settings = {
@@ -308,7 +308,7 @@ export const settings = {
     terrainSource: new Setting<TerrainSource>(
         'terrainSource',
         defaultTerrainSource,
-        getValueValidator(['maptiler-dem', 'mapterhorn'], defaultTerrainSource)
+        getValueValidator(['mapterhorn'], defaultTerrainSource)
     ),
     directionMarkers: new Setting('directionMarkers', false),
     distanceMarkers: new Setting('distanceMarkers', false),

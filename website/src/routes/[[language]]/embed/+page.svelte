@@ -19,8 +19,8 @@
             return;
         }
         embeddingOptions = getMergedEmbeddingOptions(options);
-        if (embeddingOptions.key === '' && embeddingOptions.basemap.startsWith('maptiler')) {
-            embeddingOptions.basemap = 'openStreetMap';
+        if (embeddingOptions.key === '' && embeddingOptions.basemap === 'satellite') {
+            embeddingOptions.basemap = 'topo';
         }
     });
 </script>

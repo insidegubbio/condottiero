@@ -29,7 +29,7 @@ export const defaultEmbeddingOptions = {
     key: '',
     files: [],
     ids: [],
-    basemap: 'maptilerStreets',
+    basemap: 'topo',
     elevation: {
         show: true,
         height: 170,
@@ -125,9 +125,7 @@ export function convertOldEmbeddingOptions(options: URLSearchParams): any {
     }
     if (options.has('source')) {
         let basemap = options.get('source')!;
-        if (basemap === 'satellite') {
-            newOptions.basemap = 'maptilerSatellite';
-        } else if (basemap === 'otm') {
+        if (basemap === 'otm') {
             newOptions.basemap = 'openTopoMap';
         } else if (basemap === 'ohm') {
             newOptions.basemap = 'openHikingMap';

@@ -35,10 +35,6 @@ export const maptilerKeyPlaceHolder = 'MAPTILER_KEY';
 export const basemaps: { [key: string]: string | StyleSpecification } = {
     topo: topo as StyleSpecification,
     satellite: satellite as StyleSpecification,
-    maptilerStreets: `https://api.maptiler.com/maps/streets-v4/style.json?key=${maptilerKeyPlaceHolder}`,
-    maptilerTopo: `https://api.maptiler.com/maps/topo-v4/style.json?key=${maptilerKeyPlaceHolder}`,
-    maptilerOutdoors: `https://api.maptiler.com/maps/outdoor-v4/style.json?key=${maptilerKeyPlaceHolder}`,
-    maptilerSatellite: `https://api.maptiler.com/maps/hybrid-v4/style.json?key=${maptilerKeyPlaceHolder}`,
     esriSatellite: {
         version: 8,
         sources: {
@@ -805,10 +801,6 @@ export const basemapTree: LayerTreeType = {
         world: {
             topo: true,
             satellite: true,
-            maptilerStreets: true,
-            maptilerTopo: true,
-            maptilerOutdoors: true,
-            maptilerSatellite: true,
             esriSatellite: true,
             openStreetMap: true,
             openTopoMap: true,
@@ -1033,10 +1025,6 @@ export const defaultBasemapTree: LayerTreeType = {
         world: {
             topo: true,
             satellite: true,
-            maptilerStreets: true,
-            maptilerTopo: true,
-            maptilerOutdoors: true,
-            maptilerSatellite: true,
             esriSatellite: false,
             openStreetMap: true,
             openTopoMap: true,
@@ -1495,14 +1483,11 @@ export const overpassQueryData: Record<string, OverpassQueryData> = {
 };
 
 export const terrainSources: { [key: string]: RasterDEMSourceSpecification } = {
-    'maptiler-dem': {
-        type: 'raster-dem',
-        url: `https://api.maptiler.com/tiles/terrain-rgb-v2/tiles.json?key=${maptilerKeyPlaceHolder}`,
-    },
     mapterhorn: {
         type: 'raster-dem',
-        url: 'https://tiles.mapterhorn.com/tilejson.json',
+        url: 'https://tiles.gpx.studio/mapterhorn.json',
+        encoding: 'terrarium',
     },
 };
 
-export const defaultTerrainSource = 'maptiler-dem';
+export const defaultTerrainSource = 'mapterhorn';

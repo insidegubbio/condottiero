@@ -7,7 +7,6 @@ import maplibregl from 'maplibre-gl';
 import { pointToTile, pointToTileFraction } from '@mapbox/tilebelt';
 import type { GPXStatisticsTree } from '$lib/logic/statistics-tree';
 import { ListTrackSegmentItem } from '$lib/components/file-list/file-list';
-import { PUBLIC_MAPTILER_KEY } from '$env/static/public';
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -101,7 +100,7 @@ export function getClosestTrackSegments(
 
 export function getElevation(
     points: (TrackPoint | Waypoint | Coordinates)[],
-    ELEVATION_ZOOM: number = 13,
+    ELEVATION_ZOOM: number = 12,
     tileSize = 512
 ): Promise<number[]> {
     let coordinates = points.map((point) =>
@@ -122,10 +121,9 @@ export function getElevation(
     };
 
     let promises = uniqueTiles.map((tile) =>
-        fetch(
-            `https://api.maptiler.com/tiles/terrain-rgb-v2/${ELEVATION_ZOOM}/${tile[0]}/${tile[1]}.webp?key=${PUBLIC_MAPTILER_KEY}`,
-            { cache: 'force-cache' }
-        )
+        fetch(`https://tiles.gpx.studio/mapterhorn/${ELEVATION_ZOOM}/${tile[0]}/${tile[1]}.webp`, {
+            cache: 'force-cache',
+        })
             .then((response) => response.blob())
             .then(
                 (blob) =>
@@ -180,10 +178,10 @@ export function getElevation(
                 _y + (_y + 1 == tileSize ? 0 : 1)
             );
 
-            let ele00 = -10000 + (p00[0] * 256 * 256 + p00[1] * 256 + p00[2]) * 0.1;
-            let ele01 = -10000 + (p01[0] * 256 * 256 + p01[1] * 256 + p01[2]) * 0.1;
-            let ele10 = -10000 + (p10[0] * 256 * 256 + p10[1] * 256 + p10[2]) * 0.1;
-            let ele11 = -10000 + (p11[0] * 256 * 256 + p11[1] * 256 + p11[2]) * 0.1;
+            let ele00 = -32768 + p00[0] * 256 + p00[1] + p00[2] / 256;
+            let ele01 = -32768 + p01[0] * 256 + p01[1] + p01[2] / 256;
+            let ele10 = -32768 + p10[0] * 256 + p10[1] + p10[2] / 256;
+            let ele11 = -32768 + p11[0] * 256 + p11[1] + p11[2] / 256;
 
             return (
                 ele00 * (1 - dx) * (1 - dy) +

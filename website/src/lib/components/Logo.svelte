@@ -8,7 +8,7 @@
         ...others
     }: {
         iconOnly?: boolean;
-        company?: 'gpx.studio' | 'maptiler' | 'github' | 'crowdin' | 'facebook' | 'reddit';
+        company?: 'gpx.studio' | 'github' | 'crowdin' | 'facebook' | 'reddit';
         [key: string]: any;
     } = $props();
 </script>
@@ -17,12 +17,6 @@
     <img
         src="{base}/{iconOnly ? 'icon' : 'logo'}{mode.current === 'dark' ? '-dark' : ''}.svg"
         alt="Logo of gpx.studio."
-        {...others}
-    />
-{:else if company === 'maptiler'}
-    <img
-        src="{base}/maptiler-logo{mode.current === 'dark' ? '-dark' : ''}.svg"
-        alt="Logo of Maptiler."
         {...others}
     />
 {:else if company === 'github'}

@@ -96,11 +96,9 @@ export class StyleManager {
         }
         this.merge(style, basemapStyle);
 
-        if (this._maptilerKey !== '') {
-            const terrain = this.getCurrentTerrain();
-            style.sources[terrain.source] = terrainSources[terrain.source];
-            style.terrain = terrain.exaggeration > 0 ? terrain : undefined;
-        }
+        const terrain = this.getCurrentTerrain();
+        style.sources[terrain.source] = terrainSources[terrain.source];
+        style.terrain = terrain.exaggeration > 0 ? terrain : undefined;
 
         style.layers.push(...anchorLayers);
 
@@ -172,7 +170,6 @@ export class StyleManager {
     }
 
     updateTerrain() {
-        if (this._maptilerKey === '') return;
         const map_ = get(this._map);
         if (!map_) return;
 
@@ -195,9 +192,6 @@ export class StyleManager {
     ): Promise<maplibregl.StyleSpecification> {
         if (typeof styleInfo === 'string') {
             let styleUrl = styleInfo as string;
-            if (styleUrl.includes(maptilerKeyPlaceHolder)) {
-                styleUrl = styleUrl.replace(maptilerKeyPlaceHolder, this._maptilerKey);
-            }
             const response = await fetch(styleUrl, { cache: 'force-cache' });
             if (!response.ok) {
                 throw new Error(`HTTP error fetching style "${styleInfo}": ${response.status}`);
@@ -260,10 +254,6 @@ export class StyleManager {
 
     getCurrentTerrain() {
         const terrain = get(terrainSource);
-        const source = terrainSources[terrain];
-        if (source.url && source.url.includes(maptilerKeyPlaceHolder)) {
-            source.url = source.url.replace(maptilerKeyPlaceHolder, this._maptilerKey);
-        }
         const map_ = get(this._map);
         return {
             source: terrain,
