@@ -28,15 +28,15 @@
         "undo": "Visszavonás ",
         "redo": "Újra",
         "delete": "Törlés",
-        "delete_all": "Delete all",
+        "delete_all": "Összes törlése",
         "select_all": "Összes kijelölése",
         "view": "Nézet",
         "elevation_profile": "Magassági profil",
-        "tree_file_view": "File tree",
+        "tree_file_view": "Adat-fa nézet",
         "switch_basemap": "Váltás az előző alaptérképre",
         "toggle_overlays": "Átfedés váltása",
         "toggle_3d": "3D nézet bekapcsolása",
-        "fullscreen": "Full screen",
+        "fullscreen": "Teljes képernyő",
         "settings": "Beállítások",
         "distance_units": "Távolságmérés mértékegységei",
         "metric": "Metrikus",
@@ -64,7 +64,7 @@
         "ctrl": "Ctrl",
         "click": "Kattints",
         "drag": "Húzza",
-        "right_click_drag": "Right-click drag",
+        "right_click_drag": "Jobb kattintásos mozgatás",
         "metadata": {
             "button": "Infó...",
             "name": "Név",
@@ -82,7 +82,7 @@
         "center": "Középre ",
         "open_in": "Megnyitás itt ",
         "copy_coordinates": "Koordináták másolása",
-        "edit_osm": "Edit in OpenStreetMap"
+        "edit_osm": "Szerkesztés OpenStreetMap-ben"
     },
     "toolbar": {
         "routing": {
@@ -192,8 +192,8 @@
                 "from": "A kiindulási pont túl messze van a legközelebbi úttól",
                 "via": "A köztes pont túl messze van a legközelebbi úttól",
                 "to": "A végpont túl messze van a legközelebbi úttól",
-                "distance": "The end point is too far from the start point",
-                "connection": "No connection found between the points",
+                "distance": "A végpont túl messze van a kezdőponttól",
+                "connection": "Nem található kapcsolat a két pont között",
                 "timeout": "Az útvonal kiszámítása túl sokáig tartott. Próbáljon meg közelebbi pontokat adni egymáshoz"
             }
         },
