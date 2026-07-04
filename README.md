@@ -3,7 +3,7 @@
   <img alt="Logo of gpx.studio." src="website/static/logo.svg">
 </picture>
 
-insidegubbio maps, based on [**gpx.studio**](https://gpx.studio), an online tool for creating and editing GPX files.
+condottiere, based on [**gpx.studio**](https://gpx.studio), an online tool for creating and editing GPX files.
 
 ![gpx.studio screenshot](website/src/lib/assets/img/docs/getting-started/interface.webp)
 
