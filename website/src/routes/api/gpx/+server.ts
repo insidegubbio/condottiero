@@ -70,7 +70,7 @@ async function getRouteBetween(
         custom_model: {}
     };
 
-    const res = await fetch('https://graphhopper.gpx.studio/route', {
+    const res = await fetch('https://graphhopper.insidegubbio.com/route', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
