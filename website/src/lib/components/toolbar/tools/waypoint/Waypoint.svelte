@@ -4,6 +4,8 @@
     import { Label } from '$lib/components/ui/label/index.js';
     import { Button } from '$lib/components/ui/button';
     import * as Select from '$lib/components/ui/select';
+    import { Slider } from '$lib/components/ui/slider';
+    import { settings } from '$lib/logic/settings';
     import { i18n } from '$lib/i18n.svelte';
     import { ListWaypointItem } from '$lib/components/file-list/file-list';
     import Help from '$lib/components/Help.svelte';
@@ -20,6 +22,8 @@
     import {
         getSvgForSymbol,
         getMarkerStyle,
+        getMarkerColor,
+        getMarkerSize,
         getCustomIconFromLinks,
         encodeMarkerStyle,
         CUSTOM_ICON_LINK_TYPE,
@@ -30,6 +34,8 @@
         class?: string;
     } = $props();
 
+    const { markerIconSize } = settings;
+
     let name = $state('');
     let description = $state('');
     let link = $state('');
@@ -38,6 +44,8 @@
     let latitude = $state(0);
 
     let markerStyle = $state<MarkerStyle>('pin');
+    let markerColorValue = $state<string | undefined>(undefined);
+    let markerSize = $state<number>(1);
     let customIconDataUri = $state<string | undefined>(undefined);
     let customIconPreviewUrl = $state<string | undefined>(undefined);
     let fileInputEl: HTMLInputElement | undefined = $state(undefined);
@@ -66,6 +74,8 @@
             longitude = 0;
             latitude = 0;
             markerStyle = 'pin';
+            markerColorValue = undefined;
+            markerSize = $markerIconSize;
             customIconDataUri = undefined;
             customIconPreviewUrl = undefined;
         }
@@ -81,6 +91,8 @@
                     description += '\n\n' + wpt.cmt;
                 }
                 markerStyle = getMarkerStyle(wpt.type);
+                markerColorValue = getMarkerColor(wpt.type);
+                markerSize = getMarkerSize(wpt.type) ?? $markerIconSize;
                 const savedIcon = getCustomIconFromLinks(wpt.link);
                 if (savedIcon) {
                     customIconDataUri = savedIcon;
@@ -147,7 +159,7 @@
                 name: name.length > 0 ? name : undefined,
                 desc: description.length > 0 ? description : undefined,
                 cmt: description.length > 0 ? description : undefined,
-                type: encodeMarkerStyle(markerStyle),
+                type: encodeMarkerStyle(markerStyle, markerColorValue, markerSize),
                 link: gpxLink,
                 sym: sym.length > 0 ? sym : undefined,
             },
@@ -169,12 +181,18 @@
             if (marker) { marker.remove(); marker = null; }
         } else if (latitude != 0 || longitude != 0) {
             const svg = getSvgForSymbol(symbolKey, undefined, markerStyle, customIconDataUri);
+            const previewSize = Math.round(100 * markerSize);
             if ($map) {
                 if (marker) {
-                    marker.setLngLat([longitude, latitude]).getElement().innerHTML = svg;
+                    const el = marker.getElement();
+                    el.innerHTML = svg;
+                    el.style.width = `${previewSize}px`;
+                    el.style.height = `${previewSize}px`;
+                    marker.setLngLat([longitude, latitude]);
                 } else {
                     let element = document.createElement('div');
-                    element.classList.add('w-8', 'h-8');
+                    element.style.width = `${previewSize}px`;
+                    element.style.height = `${previewSize}px`;
                     element.innerHTML = svg;
                     marker = new maplibregl.Marker({ element, anchor: 'bottom' })
                         .setLngLat([longitude, latitude])
@@ -190,6 +208,9 @@
         if ($map) {
             $map.on('click', setCoordinates);
             mapCursor.notify(MapCursorState.TOOL_WITH_CROSSHAIR, true);
+        }
+        if (!$selectedWaypoint) {
+            markerSize = $markerIconSize;
         }
     });
 
@@ -297,6 +318,25 @@
                     <ImageUp size="14" />
                     Image
                 </Button>
+            </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+            <Label class="flex flex-row justify-between items-center">
+                <span>{i18n._('toolbar.waypoint.marker_size')}</span>
+                <span class="text-xs text-muted-foreground tabular-nums">
+                    {Math.round(markerSize * 100)}%
+                </span>
+            </Label>
+            <div class="px-1">
+                <Slider
+                    bind:value={markerSize}
+                    type="single"
+                    min={0.15}
+                    max={1}
+                    step={0.05}
+                    disabled={!canCreate && !$selectedWaypoint}
+                />
             </div>
         </div>
 

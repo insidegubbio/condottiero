@@ -318,6 +318,7 @@ export const settings = {
         getValueValidator<StreetViewSource>(['mapillary', 'google'], 'mapillary')
     ),
     fileOrder: new Setting<string[]>('fileOrder', []),
+    markerIconSize: new Setting('markerIconSize', 0.3),
     defaultOpacity: new Setting('defaultOpacity', 0.7),
     defaultWidth: new Setting('defaultWidth', browser && window.innerWidth < 600 ? 8 : 5),
     bottomPanelSize: new Setting('bottomPanelSize', 170),

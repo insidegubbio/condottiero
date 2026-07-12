@@ -241,6 +241,7 @@
         "waypoint": {
             "tooltip": "Create and edit points of interest",
             "icon": "Icon",
+            "marker_size": "Marker size",
             "link": "Link",
             "longitude": "Longitude",
             "latitude": "Latitude",
@@ -314,6 +315,7 @@
             "openHikingMap": "OpenHikingMap",
             "cyclOSM": "CyclOSM",
             "utagawaVTT": "UtagawaMTB",
+            "minimalStreets": "Minimal (streets only)",
             "linz": "LINZ Topo",
             "linzTopo": "LINZ Topo50",
             "swisstopoRaster": "swisstopo Raster",

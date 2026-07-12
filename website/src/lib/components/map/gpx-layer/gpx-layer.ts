@@ -38,17 +38,17 @@ export const CUSTOM_ICON_LINK_TYPE = 'condottiero:customIcon';
 
 export const DEFAULT_MARKER_COLOR = '#3fb1ce';
 
-// wpt.type is encoded as:
-//   undefined                          -> pin, default color
-//   "condottiero:pin:ff0000"           -> pin, custom color
-//   "condottiero:circle"               -> circle, default (track) color
-//   "condottiero:circle:ff0000"        -> circle, custom color
-//   "condottiero:custom"               -> custom uploaded icon
-
-function parseMarkerType(wptType: string | undefined): { style: string; color?: string } | undefined {
+function parseMarkerType(
+    wptType: string | undefined
+): { style: string; color?: string; size?: number } | undefined {
     if (!wptType || !wptType.startsWith(MARKER_TYPE_PREFIX)) return undefined;
-    const [style, color] = wptType.slice(MARKER_TYPE_PREFIX.length).split(':');
-    return { style, color: color && /^[0-9a-fA-F]{6}$/.test(color) ? `#${color}` : undefined };
+    const [style, color, size] = wptType.slice(MARKER_TYPE_PREFIX.length).split(':');
+    const parsedSize = size !== undefined ? parseFloat(size) : undefined;
+    return {
+        style,
+        color: color && /^[0-9a-fA-F]{6}$/.test(color) ? `#${color}` : undefined,
+        size: parsedSize !== undefined && !isNaN(parsedSize) && parsedSize > 0 ? parsedSize : undefined,
+    };
 }
 
 export function getMarkerStyle(wptType: string | undefined): MarkerStyle {
@@ -62,9 +62,17 @@ export function getMarkerColor(wptType: string | undefined): string | undefined 
     return parseMarkerType(wptType)?.color;
 }
 
-export function encodeMarkerStyle(style: MarkerStyle, color?: string): string | undefined {
+export function getMarkerSize(wptType: string | undefined): number | undefined {
+    return parseMarkerType(wptType)?.size;
+}
+
+export function encodeMarkerStyle(style: MarkerStyle, color?: string, size?: number): string | undefined {
     const normalizedColor = color?.replace('#', '').toLowerCase();
-    if (style === 'pin' && !normalizedColor) return undefined;
+    const normalizedSize = size !== undefined && size > 0 ? size : undefined;
+    if (style === 'pin' && !normalizedColor && normalizedSize === undefined) return undefined;
+    if (normalizedSize !== undefined) {
+        return `${MARKER_TYPE_PREFIX}${style}:${normalizedColor ?? ''}:${normalizedSize}`;
+    }
     return `${MARKER_TYPE_PREFIX}${style}${normalizedColor ? ':' + normalizedColor : ''}`;
 }
 
@@ -95,7 +103,6 @@ for (let color of colors) {
     colorCount[color] = 0;
 }
 
-// Get the color with the least amount of uses
 function getColor(fileId: string) {
     let color = colors.reduce((a, b) => (colorCount[a] <= colorCount[b] ? a : b));
     colorCount[color]++;
@@ -144,7 +151,7 @@ export function getSvgForSymbol(
             } catch {
             }
         }
-        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <image href="${customIconDataUri}" x="0" y="0" width="24" height="24"/>
         </svg>`;
     }
@@ -161,7 +168,7 @@ export function getSvgForSymbol(
                   .replace('stroke-width="2"', 'stroke-width="2.5" x="8" y="8"')
             : '';
 
-        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+        return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
             <circle cx="16" cy="16" r="14" fill="${color}" stroke="white" stroke-width="2"/>
             ${innerIcon}
         </svg>`;
@@ -197,7 +204,11 @@ export function getSvgForSymbol(
     </svg>`;
 }
 
-const { directionMarkers, treeFileView, defaultOpacity, defaultWidth } = settings;
+function iconSizeExpression(defaultSize: number): maplibregl.ExpressionSpecification {
+    return ['coalesce', ['get', 'size'], defaultSize] as maplibregl.ExpressionSpecification;
+}
+
+const { directionMarkers, treeFileView, defaultOpacity, defaultWidth, markerIconSize } = settings;
 
 export class GPXLayer {
     fileId: string;
@@ -246,16 +257,23 @@ export class GPXLayer {
         this.unsubscribe.push(
             selection.subscribe(($selection) => {
                 let newSelected = $selection.hasAnyChildren(new ListFileItem(this.fileId));
-                if (this.selected || newSelected) {
-                    this.selected = newSelected;
-                    this.update();
-                }
+                this.selected = newSelected;
+                this.update();
                 if (newSelected) {
                     this.moveToFront();
                 }
             })
         );
         this.unsubscribe.push(directionMarkers.subscribe(this.updateBinded));
+        this.unsubscribe.push(
+            markerIconSize.subscribe((size) => {
+                const _map = get(map);
+                const layerId = this.fileId + '-waypoints';
+                if (_map && _map.getLayer(layerId)) {
+                    _map.setLayoutProperty(layerId, 'icon-size', iconSizeExpression(size));
+                }
+            })
+        );
     }
 
     update() {
@@ -384,7 +402,7 @@ export class GPXLayer {
                         source: this.fileId + '-waypoints',
                         layout: {
                             'icon-image': ['get', 'icon'],
-                            'icon-size': 0.3,
+                            'icon-size': iconSizeExpression(get(markerIconSize)),
                             'icon-allow-overlap': true,
                             'icon-anchor': 'bottom',
                             'icon-padding': 0,
@@ -813,8 +831,18 @@ export class GPXLayer {
         file.wpt.forEach((waypoint, index) => {
             const markerStyle = getMarkerStyle(waypoint.type);
             const markerColor = getMarkerColor(waypoint.type);
+            const markerSize = getMarkerSize(waypoint.type);
             const customIcon = getCustomIconFromLinks(waypoint.link);
             const iconId = this.getIconId(waypoint, markerStyle, markerColor, customIcon);
+
+            const properties: GeoJSON.GeoJsonProperties = {
+                fileId: this.fileId,
+                waypointIndex: index,
+                icon: iconId,
+            };
+            if (markerSize !== undefined) {
+                properties.size = markerSize;
+            }
 
             data.features.push({
                 type: 'Feature',
@@ -822,11 +850,7 @@ export class GPXLayer {
                     type: 'Point',
                     coordinates: [waypoint.getLongitude(), waypoint.getLatitude()],
                 },
-                properties: {
-                    fileId: this.fileId,
-                    waypointIndex: index,
-                    icon: iconId,
-                },
+                properties,
             });
         });
 

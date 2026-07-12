@@ -81,6 +81,31 @@ export const basemaps: { [key: string]: string | StyleSpecification } = {
             },
         ],
     },
+    minimalStreets: {
+        version: 8,
+        sources: {
+            minimalStreets: {
+                type: 'raster',
+                tiles: [
+                    'https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                    'https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                    'https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                    'https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                ],
+                tileSize: 256,
+                maxzoom: 20,
+                attribution:
+                    '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions" target="_blank">CARTO</a>',
+            },
+        },
+        layers: [
+            {
+                id: 'minimalStreets',
+                type: 'raster',
+                source: 'minimalStreets',
+            },
+        ],
+    },
     openTopoMap: {
         version: 8,
         sources: {
@@ -809,6 +834,7 @@ export const basemapTree: LayerTreeType = {
             openHikingMap: true,
             cyclOSM: true,
             utagawaVTT: true,
+            minimalStreets: true,
         },
         countries: {
             belgium: {
@@ -1035,6 +1061,7 @@ export const defaultBasemapTree: LayerTreeType = {
             openHikingMap: true,
             cyclOSM: true,
             utagawaVTT: true,
+            minimalStreets: true,
         },
         countries: {
             belgium: {
