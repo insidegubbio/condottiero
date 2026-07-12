@@ -96,6 +96,10 @@
         options;
         untrack(applyOptions);
     });
+
+    $effect(() => {
+        $directionMarkers = options.directionMarkers;
+    });
 </script>
 
 <div class="absolute flex flex-col h-full w-full border rounded-xl overflow-clip">
@@ -107,7 +111,9 @@
             geolocate={true}
             hash={useHash}
         />
-        <LayerControl />
+        {#if options.showLayerControl}
+            <LayerControl />
+        {/if}
         <GPXLayers />
         {#if $fileStateCollection.size > 1}
             <div class="h-10 -translate-y-10 w-full pointer-events-none absolute z-30">
@@ -119,11 +125,13 @@
         class="{options.elevation.show ? '' : 'h-10'} flex flex-row gap-2 p-2 sm:px-4"
         style={options.elevation.show ? `height: ${options.elevation.height}px` : ''}
     >
-        <GPXStatistics
-            {gpxStatistics}
-            {slicedGPXStatistics}
-            orientation={options.elevation.show ? 'vertical' : 'horizontal'}
-        />
+        {#if options.showStats}
+            <GPXStatistics
+                {gpxStatistics}
+                {slicedGPXStatistics}
+                orientation={options.elevation.show ? 'vertical' : 'horizontal'}
+            />
+        {/if}
         {#if options.elevation.show}
             <ElevationProfile
                 {gpxStatistics}

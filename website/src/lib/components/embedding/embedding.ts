@@ -23,6 +23,8 @@ export type EmbeddingOptions = {
     velocityUnits: 'speed' | 'pace';
     temperatureUnits: 'celsius' | 'fahrenheit';
     theme: 'system' | 'light' | 'dark';
+    showStats: boolean;
+    showLayerControl: boolean;
 };
 
 export const defaultEmbeddingOptions = {
@@ -47,6 +49,8 @@ export const defaultEmbeddingOptions = {
     velocityUnits: 'speed',
     temperatureUnits: 'celsius',
     theme: 'system',
+    showStats: true,
+    showLayerControl: true,
 };
 
 export function getMergedEmbeddingOptions(

@@ -14,6 +14,8 @@
         Coins,
         Milestone,
         Video,
+        Layers,
+        ChartBar,
     } from '@lucide/svelte';
     import { i18n } from '$lib/i18n.svelte';
     import {
@@ -146,14 +148,9 @@
                                     : i18n._('embedding.none')}
                             </Select.Trigger>
                             <Select.Content>
-                                <Select.Item value="slope">{i18n._('quantities.slope')}</Select.Item
-                                >
-                                <Select.Item value="surface"
-                                    >{i18n._('quantities.surface')}</Select.Item
-                                >
-                                <Select.Item value="highway"
-                                    >{i18n._('quantities.highway')}</Select.Item
-                                >
+                                <Select.Item value="slope">{i18n._('quantities.slope')}</Select.Item>
+                                <Select.Item value="surface">{i18n._('quantities.surface')}</Select.Item>
+                                <Select.Item value="highway">{i18n._('quantities.highway')}</Select.Item>
                                 <Select.Item value="none">{i18n._('embedding.none')}</Select.Item>
                             </Select.Content>
                         </Select.Root>
@@ -211,6 +208,20 @@
                 <Label for="direction-markers" class="flex flex-row items-center gap-1">
                     <Milestone size="16" />
                     {i18n._('menu.direction_markers')}
+                </Label>
+            </div>
+            <div class="flex flex-row items-center gap-2">
+                <Checkbox id="show-stats" bind:checked={options.showStats} />
+                <Label for="show-stats" class="flex flex-row items-center gap-1">
+                    <ChartBar size="16" />
+                    {i18n._('embedding.show_stats')}
+                </Label>
+            </div>
+            <div class="flex flex-row items-center gap-2">
+                <Checkbox id="show-layer-control" bind:checked={options.showLayerControl} />
+                <Label for="show-layer-control" class="flex flex-row items-center gap-1">
+                    <Layers size="16" />
+                    {i18n._('embedding.show_layer_control')}
                 </Label>
             </div>
             <div class="flex flex-row flex-wrap justify-between gap-3">
@@ -289,23 +300,43 @@
                 <div class="flex flex-row flex-wrap items-center gap-6">
                     <Label class="flex flex-col gap-1">
                         <span>{i18n._('embedding.latitude')}</span>
-                        <span>{lat}</span>
+                        {#if manualCamera}
+                            <Input type="number" bind:value={lat} class="h-8 w-28" step="0.0001" />
+                        {:else}
+                            <span>{lat}</span>
+                        {/if}
                     </Label>
                     <Label class="flex flex-col gap-1">
                         <span>{i18n._('embedding.longitude')}</span>
-                        <span>{lon}</span>
+                        {#if manualCamera}
+                            <Input type="number" bind:value={lon} class="h-8 w-28" step="0.0001" />
+                        {:else}
+                            <span>{lon}</span>
+                        {/if}
                     </Label>
                     <Label class="flex flex-col gap-1">
                         <span>{i18n._('embedding.zoom')}</span>
-                        <span>{zoom}</span>
+                        {#if manualCamera}
+                            <Input type="number" bind:value={zoom} class="h-8 w-20" step="0.1" />
+                        {:else}
+                            <span>{zoom}</span>
+                        {/if}
                     </Label>
                     <Label class="flex flex-col gap-1">
                         <span>{i18n._('embedding.bearing')}</span>
-                        <span>{bearing}</span>
+                        {#if manualCamera}
+                            <Input type="number" bind:value={bearing} class="h-8 w-20" step="1" />
+                        {:else}
+                            <span>{bearing}</span>
+                        {/if}
                     </Label>
                     <Label class="flex flex-col gap-1">
                         <span>{i18n._('embedding.pitch')}</span>
-                        <span>{pitch}</span>
+                        {#if manualCamera}
+                            <Input type="number" bind:value={pitch} class="h-8 w-20" step="1" />
+                        {:else}
+                            <span>{pitch}</span>
+                        {/if}
                     </Label>
                 </div>
             </div>
@@ -318,8 +349,7 @@
             <Label>
                 {i18n._('embedding.code')}
             </Label>
-            <pre
-                class="bg-primary text-primary-foreground p-3 rounded-md whitespace-normal break-all">
+            <pre class="bg-primary text-primary-foreground p-3 rounded-md whitespace-normal break-all">
                 <code class="language-html">
                     {`<iframe src="https://condottiero.insidegubbio.com${base}/embed?options=${encodeURIComponent(JSON.stringify(getCleanedEmbeddingOptions(iframeOptions)))}${hash}" width="100%" height="600px" frameborder="0" style="outline: none;"/>`}
                 </code>

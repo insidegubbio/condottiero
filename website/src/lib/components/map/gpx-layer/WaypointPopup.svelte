@@ -41,9 +41,9 @@
     }
 </script>
 
-<Card.Root class="border-none shadow-md text-base p-2 max-w-[50dvw] gap-0">
+<Card.Root class="border-none shadow-md p-2 max-w-[50dvw] gap-0 waypoint-popup-card">
     <Card.Header class="p-0 gap-0">
-        <Card.Title class="text-md">
+        <Card.Title class="text-md waypoint-popup-title">
             {#if waypoint.item.link && waypoint.item.link.attributes && waypoint.item.link.attributes.href}
                 <a href={waypoint.item.link.attributes.href} target="_blank">
                     {waypoint.item.name ?? waypoint.item.link.attributes.href}
@@ -55,7 +55,7 @@
         </Card.Title>
     </Card.Header>
     <Card.Content class="flex flex-col text-sm p-0">
-        <div class="flex flex-row items-center text-muted-foreground text-xs whitespace-nowrap">
+        <div class="flex flex-row items-center waypoint-popup-meta text-xs whitespace-nowrap">
             {#if symbolKey}
                 <span>
                     {#if symbols[symbolKey].icon}
@@ -78,10 +78,10 @@
         </div>
         <ScrollArea class="flex flex-col max-h-[30dvh]">
             {#if waypoint.item.desc}
-                <span class="whitespace-pre-wrap">{@html sanitize(waypoint.item.desc)}</span>
+                <span class="whitespace-pre-wrap waypoint-popup-body">{@html sanitize(waypoint.item.desc)}</span>
             {/if}
             {#if waypoint.item.cmt && waypoint.item.cmt !== waypoint.item.desc}
-                <span class="whitespace-pre-wrap">{@html sanitize(waypoint.item.cmt)}</span>
+                <span class="whitespace-pre-wrap waypoint-popup-body">{@html sanitize(waypoint.item.cmt)}</span>
             {/if}
         </ScrollArea>
         <div class="mt-2 flex flex-col gap-1">
@@ -107,6 +107,25 @@
 
 <style lang="postcss">
     @reference "../../../../app.css";
+
+    :global(.waypoint-popup-card) {
+        font-family: 'Satoshi', sans-serif !important;
+        color: #2C3229 !important;
+    }
+
+    :global(.waypoint-popup-title) {
+        font-family: 'Satoshi', sans-serif !important;
+        color: #2C3229 !important;
+    }
+
+    :global(.waypoint-popup-meta) {
+        color: color-mix(in srgb, #2C3229 60%, transparent) !important;
+    }
+
+    :global(.waypoint-popup-body) {
+        font-family: 'Satoshi', sans-serif !important;
+        color: #2C3229 !important;
+    }
 
     div :global(a) {
         @apply text-link;

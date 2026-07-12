@@ -618,7 +618,23 @@ export class GPXLayer {
             return;
         }
 
-        let waypointIndex = e.features[0].properties!.waypointIndex;
+        const _map = get(map);
+        if (!_map) return;
+
+        // Trova il waypoint più vicino al punto cliccato
+        let closestFeature = e.features[0];
+        let minDist = Infinity;
+        for (const feature of e.features) {
+            const coords = (feature.geometry as GeoJSON.Point).coordinates;
+            const projected = _map.project([coords[0], coords[1]]);
+            const dist = Math.hypot(projected.x - e.point.x, projected.y - e.point.y);
+            if (dist < minDist) {
+                minDist = dist;
+                closestFeature = feature;
+            }
+        }
+
+        let waypointIndex = closestFeature.properties!.waypointIndex;
         let file = get(this.file)?.file;
         if (!file) {
             return;
