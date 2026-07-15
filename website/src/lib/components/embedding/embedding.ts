@@ -1,148 +1,158 @@
-<script lang="ts">
-    import GPXLayers from '$lib/components/map/gpx-layer/GPXLayers.svelte';
-    import ElevationProfile from '$lib/components/elevation-profile/ElevationProfile.svelte';
-    import FileList from '$lib/components/file-list/FileList.svelte';
-    import GPXStatistics from '$lib/components/GPXStatistics.svelte';
-    import Map from '$lib/components/map/Map.svelte';
-    import LayerControl from '$lib/components/map/layer-control/LayerControl.svelte';
-    import { writable } from 'svelte/store';
-    import type { GPXFile } from 'gpx';
-    import {
-        allowedEmbeddingBasemaps,
-        getFilesFromEmbeddingOptions,
-        type EmbeddingOptions,
-    } from './embedding';
-    import { setMode } from 'mode-watcher';
-    import { settings } from '$lib/logic/settings';
-    import { fileStateCollection } from '$lib/logic/file-state';
-    import { gpxStatistics, hoveredPoint, slicedGPXStatistics } from '$lib/logic/statistics';
-    import { loadFile } from '$lib/logic/file-actions';
-    import { selection } from '$lib/logic/selection';
-    import { untrack } from 'svelte';
-    import { isSelected, toggle } from '$lib/components/map/layer-control/utils';
+import { PUBLIC_MAPTILER_KEY } from '$env/static/public';
+import { basemaps } from '$lib/assets/layers';
 
-    let {
-        useHash = true,
-        options = $bindable(),
-        hash = $bindable(),
-    }: { useHash?: boolean; options: EmbeddingOptions; hash: string } = $props();
+export type EmbeddingOptions = {
+    key: string;
+    files: string[];
+    ids: string[];
+    basemap: string;
+    elevation: {
+        show: boolean;
+        height: number;
+        controls: boolean;
+        fill: 'slope' | 'surface' | 'highway' | 'none';
+        speed: boolean;
+        hr: boolean;
+        cad: boolean;
+        temp: boolean;
+        power: boolean;
+    };
+    distanceMarkers: boolean;
+    directionMarkers: boolean;
+    distanceUnits: 'metric' | 'imperial' | 'nautical';
+    velocityUnits: 'speed' | 'pace';
+    temperatureUnits: 'celsius' | 'fahrenheit';
+    theme: 'system' | 'light' | 'dark';
+    showStats: boolean;
+    showLayerControl: boolean;
+};
 
-    let additionalDatasets = writable<string[]>([]);
-    let elevationFill = writable<'slope' | 'surface' | 'highway' | undefined>(undefined);
+export const defaultEmbeddingOptions = {
+    key: '',
+    files: [],
+    ids: [],
+    basemap: 'libertyTopo',
+    elevation: {
+        show: true,
+        height: 170,
+        controls: true,
+        fill: 'none',
+        speed: false,
+        hr: false,
+        cad: false,
+        temp: false,
+        power: false,
+    },
+    distanceMarkers: false,
+    directionMarkers: false,
+    distanceUnits: 'metric',
+    velocityUnits: 'speed',
+    temperatureUnits: 'celsius',
+    theme: 'system',
+    showStats: true,
+    showLayerControl: true,
+};
 
-    const {
-        currentBasemap,
-        selectedBasemapTree,
-        distanceUnits,
-        velocityUnits,
-        temperatureUnits,
-        fileOrder,
-        distanceMarkers,
-        directionMarkers,
-    } = settings;
-
-    settings.initialize();
-
-    function applyOptions() {
-        if (allowedEmbeddingBasemaps.includes(options.basemap)) {
-            $currentBasemap = options.basemap;
+export function getMergedEmbeddingOptions(
+    options: any,
+    defaultOptions: any = defaultEmbeddingOptions
+): EmbeddingOptions {
+    const mergedOptions = JSON.parse(JSON.stringify(defaultOptions));
+    for (const key in options) {
+        if (
+            typeof options[key] === 'object' &&
+            options[key] !== null &&
+            !Array.isArray(options[key])
+        ) {
+            mergedOptions[key] = getMergedEmbeddingOptions(options[key], defaultOptions[key]);
+        } else {
+            mergedOptions[key] = options[key];
         }
-        if (!isSelected($selectedBasemapTree, options.basemap)) {
-            $selectedBasemapTree = toggle($selectedBasemapTree, options.basemap);
-        }
-        $distanceMarkers = options.distanceMarkers;
-        $directionMarkers = options.directionMarkers;
-        $distanceUnits = options.distanceUnits;
-        $velocityUnits = options.velocityUnits;
-        $temperatureUnits = options.temperatureUnits;
-        if (options.theme != 'system') {
-            setMode(options.theme);
-        }
-
-        additionalDatasets.set(
-            [
-                options.elevation.speed ? 'speed' : null,
-                options.elevation.hr ? 'hr' : null,
-                options.elevation.cad ? 'cad' : null,
-                options.elevation.temp ? 'temp' : null,
-                options.elevation.power ? 'power' : null,
-            ].filter((dataset) => dataset !== null)
-        );
-        elevationFill.set(options.elevation.fill == 'none' ? undefined : options.elevation.fill);
-
-        let downloads: Promise<GPXFile | null>[] = getFilesFromEmbeddingOptions(options).map(
-            (url) => {
-                return fetch(url)
-                    .then((response) => response.blob())
-                    .then((blob) => new File([blob], url.split('/').pop() ?? url))
-                    .then(loadFile);
-            }
-        );
-        Promise.all(downloads).then((answers) => {
-            const files = answers.filter((file) => file !== null) as GPXFile[];
-            let ids: string[] = [];
-            files.forEach((file, index) => {
-                let id = `gpx-${index}-embed`;
-                file._data.id = id;
-                ids.push(id);
-            });
-            fileStateCollection.setEmbeddedFiles(files);
-            $fileOrder = ids;
-            selection.selectAll();
-        });
     }
+    return mergedOptions;
+}
 
-    $effect(() => {
-        options;
-        untrack(applyOptions);
-    });
+export function getCleanedEmbeddingOptions(
+    options: any,
+    defaultOptions: any = defaultEmbeddingOptions
+): any {
+    const cleanedOptions = JSON.parse(JSON.stringify(options));
+    for (const key in cleanedOptions) {
+        if (
+            typeof cleanedOptions[key] === 'object' &&
+            cleanedOptions[key] !== null &&
+            !Array.isArray(cleanedOptions[key])
+        ) {
+            cleanedOptions[key] = getCleanedEmbeddingOptions(
+                cleanedOptions[key],
+                defaultOptions[key]
+            );
+            if (Object.keys(cleanedOptions[key]).length === 0) {
+                delete cleanedOptions[key];
+            }
+        } else if (JSON.stringify(cleanedOptions[key]) === JSON.stringify(defaultOptions[key])) {
+            delete cleanedOptions[key];
+        }
+    }
+    if (cleanedOptions['key'] && cleanedOptions['key'] === PUBLIC_MAPTILER_KEY) {
+        delete cleanedOptions['key'];
+    }
+    return cleanedOptions;
+}
 
-    $effect(() => {
-        $directionMarkers = options.directionMarkers;
-    });
-</script>
+export const allowedEmbeddingBasemaps = Object.keys(basemaps).filter(
+    (basemap) => !['ordnanceSurvey'].includes(basemap)
+);
 
-<div class="absolute flex flex-col h-full w-full border rounded-xl overflow-clip">
-    <div class="grow relative">
-        <Map
-            class="h-full {$fileStateCollection.size > 1 ? 'horizontal' : ''}"
-            maptilerKey={options.key}
-            geocoder={false}
-            geolocate={true}
-            hash={useHash}
-        />
-        {#if options.showLayerControl}
-            <LayerControl />
-        {/if}
-        <GPXLayers />
-        {#if $fileStateCollection.size > 1}
-            <div class="h-10 -translate-y-10 w-full pointer-events-none absolute z-30">
-                <FileList orientation="horizontal" />
-            </div>
-        {/if}
-    </div>
-    {#if options.showStats || options.elevation.show}
-        <div
-            class="{options.elevation.show ? '' : 'h-10'} flex flex-row gap-2 p-2 sm:px-4"
-            style={options.elevation.show ? `height: ${options.elevation.height}px` : ''}
-        >
-            {#if options.showStats}
-                <GPXStatistics
-                    {gpxStatistics}
-                    {slicedGPXStatistics}
-                    orientation={options.elevation.show ? 'vertical' : 'horizontal'}
-                />
-            {/if}
-            {#if options.elevation.show}
-                <ElevationProfile
-                    {gpxStatistics}
-                    {slicedGPXStatistics}
-                    {hoveredPoint}
-                    {additionalDatasets}
-                    {elevationFill}
-                    showControls={options.elevation.controls}
-                />
-            {/if}
-        </div>
-    {/if}
-</div>
+export function getFilesFromEmbeddingOptions(options: EmbeddingOptions): string[] {
+    return options.files.concat(options.ids.map((id) => getURLForGoogleDriveFile(id)));
+}
+
+export function getURLForGoogleDriveFile(fileId: string): string {
+    return `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=AIzaSyA2ZadQob_hXiT2VaYIkAyafPvz_4ZMssk`;
+}
+
+export function convertOldEmbeddingOptions(options: URLSearchParams): any {
+    let newOptions: any = {
+        key: PUBLIC_MAPTILER_KEY,
+        files: [],
+        ids: [],
+    };
+    if (options.has('state')) {
+        let state = JSON.parse(options.get('state')!);
+        if (state.ids) {
+            newOptions.ids.push(...state.ids);
+        }
+        if (state.urls) {
+            newOptions.files.push(...state.urls);
+        }
+    }
+    if (options.has('source')) {
+        let basemap = options.get('source')!;
+        if (basemap === 'satellite') {
+            newOptions.basemap = 'libertySatellite';
+        } else if (basemap === 'otm') {
+            newOptions.basemap = 'openTopoMap';
+        } else if (basemap === 'ohm') {
+            newOptions.basemap = 'openHikingMap';
+        }
+    }
+    if (options.has('imperial')) {
+        newOptions.distanceUnits = 'imperial';
+    }
+    if (options.has('running')) {
+        newOptions.velocityUnits = 'pace';
+    }
+    if (options.has('distance')) {
+        newOptions.distanceMarkers = true;
+    }
+    if (options.has('direction')) {
+        newOptions.directionMarkers = true;
+    }
+    if (options.has('slope')) {
+        newOptions.elevation = {
+            fill: 'slope',
+        };
+    }
+    return newOptions;
+}
