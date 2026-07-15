@@ -125,18 +125,34 @@
         color: #2C3229 !important;
     }
 
+    :global(.dark .waypoint-popup-card) {
+        color: #DFE5D7 !important;
+    }
+
     :global(.waypoint-popup-title) {
         font-family: 'Satoshi', sans-serif !important;
         color: #2C3229 !important;
+    }
+
+    :global(.dark .waypoint-popup-title) {
+        color: #DFE5D7 !important;
     }
 
     :global(.waypoint-popup-meta) {
         color: color-mix(in srgb, #2C3229 60%, transparent) !important;
     }
 
+    :global(.dark .waypoint-popup-meta) {
+        color: color-mix(in srgb, #DFE5D7 60%, transparent) !important;
+    }
+
     :global(.waypoint-popup-body) {
         font-family: 'Satoshi', sans-serif !important;
         color: #2C3229 !important;
+    }
+
+    :global(.dark .waypoint-popup-body) {
+        color: #DFE5D7 !important;
     }
 
     div :global(a) {
