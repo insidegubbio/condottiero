@@ -257,8 +257,11 @@ export class GPXLayer {
         this.unsubscribe.push(
             selection.subscribe(($selection) => {
                 let newSelected = $selection.hasAnyChildren(new ListFileItem(this.fileId));
+                let wasSelected = this.selected;
                 this.selected = newSelected;
-                this.update();
+                if (newSelected || wasSelected) {
+                    this.update();
+                }
                 if (newSelected) {
                     this.moveToFront();
                 }
@@ -665,10 +668,10 @@ export class GPXLayer {
                     selection.selectItem(new ListWaypointItem(this.fileId, waypointIndex));
                 }
             } else {
+                waypointPopup?.setItem({ item: waypoint, fileId: this.fileId });
                 if (!this.selected) {
                     selection.selectItem(new ListFileItem(this.fileId));
                 }
-                waypointPopup?.setItem({ item: waypoint, fileId: this.fileId });
             }
         }
     }
