@@ -35,11 +35,11 @@ export class MapPopup {
 
     setItem(item: PopupItem | null) {
         if (item) item.hide = () => this.hide();
+        this.popup.remove();
         this.item.set(item);
         if (item === null) {
             this.hide();
         } else {
-            this.popup.remove();
             const requestId = ++this.requestId;
             tick().then(() => this.show(requestId));
         }
