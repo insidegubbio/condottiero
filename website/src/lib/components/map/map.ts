@@ -57,7 +57,11 @@ export class MapLibreGLMap {
             boxZoom: false,
             maxPitch: 90,
             cooperativeGestures: cooperativeGestures,
-            cooperativeGesturesOnHoverMessage: 'usa ctrl + scroll per muovere la mappa',
+            locale: {
+                'CooperativeGesturesHandler.WindowsHelpText': 'usa ctrl + scroll per muovere la mappa',
+                'CooperativeGesturesHandler.MacHelpText': 'usa ⌘ + scroll per muovere la mappa',
+                'CooperativeGesturesHandler.MobileHelpText': 'usa due dita per muovere la mappa',
+            },
         });
         this.layerEventManager = new MapLayerEventManager(map);
         map.addControl(
