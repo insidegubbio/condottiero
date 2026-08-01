@@ -19,6 +19,7 @@
     import { loadFile } from '$lib/logic/file-actions';
     import { selection } from '$lib/logic/selection';
     import { untrack } from 'svelte';
+    import { onMount } from 'svelte';
     import { isSelected, toggle } from '$lib/components/map/layer-control/utils';
 
     let {
@@ -100,6 +101,14 @@
     $effect(() => {
         $directionMarkers = options.directionMarkers;
     });
+
+    onMount(() => {
+        window.addEventListener('message', (e) => {
+            if (e.data === 'geolocate') {
+                document.querySelector('.maplibregl-ctrl-geolocate')?.click()
+            }
+        })
+    })
 </script>
 
 <div class="absolute flex flex-col h-full w-full border rounded-xl overflow-clip">
