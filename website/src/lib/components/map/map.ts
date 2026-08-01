@@ -37,7 +37,7 @@ export class MapLibreGLMap {
         language: string,
         hash: boolean,
         geocoder: boolean,
-        geolocate: boolean
+        geolocate: boolean,
         cooperativeGestures: boolean = false
     ) {
         this._maptilerKey = maptilerKey;
