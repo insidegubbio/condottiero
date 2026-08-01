@@ -20,6 +20,7 @@
     import { selection } from '$lib/logic/selection';
     import { untrack } from 'svelte';
     import { onMount } from 'svelte';
+    import { map } from '$lib/components/map/map';
     import { isSelected, toggle } from '$lib/components/map/layer-control/utils';
 
     let {
@@ -105,9 +106,18 @@
     onMount(() => {
         window.addEventListener('message', (e) => {
             if (e.data === 'geolocate') {
-                document.querySelector('.maplibregl-ctrl-geolocate')?.click()
+                document.querySelector('.maplibregl-ctrl-geolocate')?.click();
             }
-        })
+            if (e.data === 'zoom-in') {
+                $map?.zoomIn();
+            }
+            if (e.data === 'zoom-out') {
+                $map?.zoomOut();
+            }
+            if (e.data === 'reset-north') {
+                $map?.resetNorth();
+            }
+        });
     })
 </script>
 
