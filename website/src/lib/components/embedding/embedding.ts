@@ -25,6 +25,7 @@ export type EmbeddingOptions = {
     theme: 'system' | 'light' | 'dark';
     showStats: boolean;
     showLayerControl: boolean;
+    showControls: boolean; 
 };
 
 export const defaultEmbeddingOptions = {
@@ -51,6 +52,7 @@ export const defaultEmbeddingOptions = {
     theme: 'system',
     showStats: true,
     showLayerControl: true,
+    showControls: true,
 };
 
 export function getMergedEmbeddingOptions(
