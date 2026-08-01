@@ -38,6 +38,7 @@ export class MapLibreGLMap {
         hash: boolean,
         geocoder: boolean,
         geolocate: boolean
+        cooperativeGestures: boolean = false
     ) {
         this._maptilerKey = maptilerKey;
         this._styleManager = new StyleManager(this._mapStore, this._maptilerKey);
@@ -55,6 +56,7 @@ export class MapLibreGLMap {
             hash: hash,
             boxZoom: false,
             maxPitch: 90,
+            cooperativeGestures: cooperativeGestures,
         });
         this.layerEventManager = new MapLayerEventManager(map);
         map.addControl(
