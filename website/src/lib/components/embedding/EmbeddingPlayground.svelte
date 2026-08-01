@@ -16,6 +16,7 @@
         Video,
         Layers,
         ChartBar,
+        Compass,
     } from '@lucide/svelte';
     import { i18n } from '$lib/i18n.svelte';
     import {
@@ -267,6 +268,13 @@
                             <Label for="fahrenheit">{i18n._('menu.fahrenheit')}</Label>
                         </div>
                     </RadioGroup.Root>
+                </Label>
+            </div>
+            <div class="flex flex-row items-center gap-2">
+                <Checkbox id="show-controls" bind:checked={options.showControls} />
+                <Label for="show-controls" class="flex flex-row items-center gap-1">
+                    <Compass size="16" />
+                    {i18n._('embedding.show_controls')}
                 </Label>
             </div>
             <Label class="flex flex-col items-start gap-2">
