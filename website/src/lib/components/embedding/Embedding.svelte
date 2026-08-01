@@ -112,7 +112,7 @@
 </script>
 
 <div class="absolute flex flex-col h-full w-full border rounded-xl overflow-clip">
-    <div class="grow relative">
+    <div class="grow relative" class:hide-map-controls={!options.showControls}>
         <Map
             class="h-full {$fileStateCollection.size > 1 ? 'horizontal' : ''}"
             maptilerKey={options.key}
@@ -155,3 +155,9 @@
         </div>
     {/if}
 </div>
+
+<style>
+    .hide-map-controls :global(.maplibregl-ctrl-top-right) {
+        display: none !important;
+    }
+</style>
