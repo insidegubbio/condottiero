@@ -45,7 +45,7 @@
             language = 'en';
         }
 
-        map.init(maptilerKey, language, hash, geocoder, geolocate);
+        map.init(maptilerKey, language, hash, geocoder, geolocate, cooperativeGestures);
     });
 
     onDestroy(() => {
