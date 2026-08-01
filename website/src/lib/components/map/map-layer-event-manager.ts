@@ -246,19 +246,15 @@ export class MapLayerEventManager {
         layerIds: string[],
         bounds: maplibregl.LngLatBounds
     ): string[] {
-        let result = layerIds.filter((layerId) => {
+        return layerIds.filter((layerId) => {
             if (!this._map.getLayer(layerId)) return false;
             const fileId = layerId.replace('-waypoints', '');
             if (fileId === layerId) {
                 return fileStateCollection.getStatistics(fileId)?.intersectsBBox(bounds) ?? true;
             } else {
-                return (
-                    fileStateCollection.getStatistics(fileId)?.intersectsWaypointBBox(bounds) ??
-                    true
-                );
+                return true;
             }
         });
-        return result;
     }
 
     private _getRenderedFeaturesByLayer(e: maplibregl.MapMouseEvent | maplibregl.MapTouchEvent) {
