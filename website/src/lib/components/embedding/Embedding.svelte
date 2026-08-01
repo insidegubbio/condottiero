@@ -120,6 +120,13 @@
             geolocate={true}
             hash={useHash}
         />
+        {#if !options.showControls}
+            <style>
+                :global(.maplibregl-ctrl-top-right) {
+                    display: none !important;
+                }
+            </style>
+        {/if}
         {#if options.showLayerControl}
             <LayerControl />
         {/if}
