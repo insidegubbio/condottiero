@@ -77,11 +77,27 @@ export function encodeMarkerStyle(style: MarkerStyle, color?: string, size?: num
 }
 
 export function getCustomIconFromLinks(
-    link: { attributes: { href: string }; type?: string } | undefined
+    link: { attributes: { href: string }; text?: string; type?: string } | undefined
 ): string | undefined {
     if (!link) return undefined;
     if (link.type === CUSTOM_ICON_LINK_TYPE) return link.attributes.href;
     return undefined;
+}
+
+export function getExternalLinkFromCustomIcon(
+    link: { attributes: { href: string }; text?: string; type?: string } | undefined
+): string | undefined {
+    if (!link || link.type !== CUSTOM_ICON_LINK_TYPE) return undefined;
+    return link.text ?? undefined;
+}
+
+function simpleHash(str: string): string {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+        hash = ((hash << 5) - hash) + str.charCodeAt(i);
+        hash |= 0;
+    }
+    return Math.abs(hash).toString(36);
 }
 
 const colors = [
@@ -885,7 +901,7 @@ export class GPXLayer {
         const symbolKey = getSymbolKey(waypoint.sym);
         const colorPart = markerColor ? `-${markerColor.replace('#', '')}` : `-${this.layerColor}`;
         const customPart =
-            markerStyle === 'custom' && customIcon ? '-' + btoa(customIcon).slice(0, 8) : '';
+            markerStyle === 'custom' && customIcon ? '-' + simpleHash(customIcon) : '';
         return `waypoint-${symbolKey ?? 'default'}${colorPart}-${markerStyle}${customPart}`;
     }
 

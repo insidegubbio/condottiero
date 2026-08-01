@@ -25,6 +25,7 @@
         getMarkerColor,
         getMarkerSize,
         getCustomIconFromLinks,
+        getExternalLinkFromCustomIcon,
         encodeMarkerStyle,
         CUSTOM_ICON_LINK_TYPE,
         type MarkerStyle,
@@ -97,7 +98,7 @@
                 if (savedIcon) {
                     customIconDataUri = savedIcon;
                     customIconPreviewUrl = savedIcon;
-                    link = '';
+                    link = getExternalLinkFromCustomIcon(wpt.link) ?? '';
                 } else {
                     customIconDataUri = undefined;
                     customIconPreviewUrl = undefined;
@@ -148,6 +149,7 @@
                 ? {
                       attributes: { href: customIconDataUri },
                       type: CUSTOM_ICON_LINK_TYPE,
+                      text: link.length > 0 ? link : undefined,
                   }
                 : link.length > 0
                   ? { attributes: { href: link } }
@@ -369,17 +371,15 @@
             </div>
         {/if}
 
-        {#if markerStyle !== 'custom'}
-            <div class="flex flex-col gap-1">
-                <Label for="link">{i18n._('toolbar.waypoint.link')}</Label>
-                <Input
-                    bind:value={link}
-                    id="link"
-                    class="h-8"
-                    disabled={!canCreate && !$selectedWaypoint}
-                />
-            </div>
-        {/if}
+        <div class="flex flex-col gap-1">
+            <Label for="link">{i18n._('toolbar.waypoint.link')}</Label>
+            <Input
+                bind:value={link}
+                id="link"
+                class="h-8"
+                disabled={!canCreate && !$selectedWaypoint}
+            />
+        </div>
 
         <div class="flex flex-row gap-1.5">
             <div class="grow flex flex-col gap-1">

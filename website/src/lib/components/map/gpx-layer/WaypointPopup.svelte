@@ -15,6 +15,7 @@
     import type { PopupItem } from '$lib/components/map/map-popup';
     import { selection } from '$lib/logic/selection';
     import { ListFileItem } from '$lib/components/file-list/file-list';
+    import { getCustomIconFromLinks, getExternalLinkFromCustomIcon } from '$lib/components/map/gpx-layer/gpx-layer';
 
     let {
         waypoint,
@@ -26,6 +27,12 @@
         waypoint.fileId ? $selection.hasAnyChildren(new ListFileItem(waypoint.fileId)) : false
     );
     let symbolKey = $derived(waypoint ? getSymbolKey(waypoint.item.sym) : undefined);
+
+    let externalLink = $derived(
+        getCustomIconFromLinks(waypoint.item.link)
+            ? getExternalLinkFromCustomIcon(waypoint.item.link)
+            : waypoint.item.link?.attributes?.href
+    );
 
     function sanitize(text: string | undefined): string {
         if (text === undefined) {
@@ -44,9 +51,9 @@
 <Card.Root class="border-none shadow-md p-2 max-w-[50dvw] gap-0 waypoint-popup-card pointer-events-none">
     <Card.Header class="p-0 gap-0">
         <Card.Title class="text-md waypoint-popup-title">
-            {#if waypoint.item.link && waypoint.item.link.attributes && waypoint.item.link.attributes.href}
-                <a href={waypoint.item.link.attributes.href} target="_blank" class="pointer-events-auto">
-                    {waypoint.item.name ?? waypoint.item.link.attributes.href}
+            {#if externalLink}
+                <a href={externalLink} target="_blank" class="pointer-events-auto">
+                    {waypoint.item.name ?? externalLink}
                     <ExternalLink size="12" class="inline-block mb-1.5" />
                 </a>
             {:else}
@@ -85,11 +92,11 @@
             {/if}
         </ScrollArea>
         <div class="mt-2 flex flex-col gap-1 pointer-events-auto">
-            {#if waypoint.item.link && waypoint.item.link.attributes && waypoint.item.link.attributes.href}
+            {#if externalLink}
                 <Button
                     class="justify-start"
                     variant="outline"
-                    href={waypoint.item.link.attributes.href}
+                    href={externalLink}
                     target="_blank"
                 >
                     <ExternalLink size="16" />
