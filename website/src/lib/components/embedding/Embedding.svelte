@@ -129,6 +129,7 @@
             geocoder={false}
             geolocate={true}
             hash={useHash}
+            cooperativeGestures={true}
         />
         {#if options.showLayerControl}
             <LayerControl />
