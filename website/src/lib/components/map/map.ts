@@ -57,6 +57,7 @@ export class MapLibreGLMap {
             boxZoom: false,
             maxPitch: 90,
             cooperativeGestures: cooperativeGestures,
+            cooperativeGesturesOnHoverMessage: 'usa ctrl + scroll per muovere la mappa',
         });
         this.layerEventManager = new MapLayerEventManager(map);
         map.addControl(
