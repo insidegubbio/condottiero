@@ -11,12 +11,14 @@
         geolocate = true,
         geocoder = true,
         hash = true,
+        cooperativeGestures = false,
         class: className = '',
     }: {
         maptilerKey?: string;
         geolocate?: boolean;
         geocoder?: boolean;
         hash?: boolean;
+        cooperativeGestures?: boolean;
         class?: string;
     } = $props();
 
@@ -43,7 +45,7 @@
             language = 'en';
         }
 
-        map.init(maptilerKey, language, hash, geocoder, geolocate);
+        map.init(maptilerKey, language, hash, geocoder, geolocate, cooperativeGestures);
     });
 
     onDestroy(() => {

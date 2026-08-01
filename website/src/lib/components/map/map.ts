@@ -37,7 +37,8 @@ export class MapLibreGLMap {
         language: string,
         hash: boolean,
         geocoder: boolean,
-        geolocate: boolean
+        geolocate: boolean,
+        cooperativeGestures: boolean = false
     ) {
         this._maptilerKey = maptilerKey;
         this._styleManager = new StyleManager(this._mapStore, this._maptilerKey);
@@ -55,6 +56,12 @@ export class MapLibreGLMap {
             hash: hash,
             boxZoom: false,
             maxPitch: 90,
+            cooperativeGestures: cooperativeGestures,
+            locale: {
+                'CooperativeGesturesHandler.WindowsHelpText': 'usa ctrl + scroll per muovere la mappa',
+                'CooperativeGesturesHandler.MacHelpText': 'usa ⌘ + scroll per muovere la mappa',
+                'CooperativeGesturesHandler.MobileHelpText': 'usa due dita per muovere la mappa',
+            },
         });
         this.layerEventManager = new MapLayerEventManager(map);
         map.addControl(
