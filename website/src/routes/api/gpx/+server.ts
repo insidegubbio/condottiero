@@ -1,7 +1,6 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 
-// types
 interface POI {
     lat: number;
     lon: number;
@@ -9,6 +8,8 @@ interface POI {
     desc?: string;
     ele?: number;
     sym?: string;
+    icon_url?: string;
+    link?: string;
 }
 
 interface RequestBody {
@@ -17,8 +18,8 @@ interface RequestBody {
     pois: POI[];
     create_track?: boolean;
     color?: string;
-    profile?: string; // foot, bike, car
-    routing?: boolean; // default true
+    profile?: string;
+    routing?: boolean;
 }
 
 interface RoutePoint {
@@ -27,7 +28,6 @@ interface RoutePoint {
     ele?: number;
 }
 
-// helpers
 function escapeXml(str: string): string {
     return str
         .replace(/&/g, '&amp;')
@@ -41,8 +41,15 @@ function buildWpt(poi: POI): string {
     const name = poi.name ? `\n    <name>${escapeXml(poi.name)}</name>` : '';
     const desc = poi.desc ? `\n    <desc>${escapeXml(poi.desc)}</desc>` : '';
     const ele  = poi.ele  != null ? `\n    <ele>${poi.ele}</ele>` : '';
-    const sym  = poi.sym  ? `\n    <sym>${escapeXml(poi.sym)}</sym>` : '';
-    return `  <wpt lat="${poi.lat}" lon="${poi.lon}">${ele}${name}${desc}${sym}\n  </wpt>`;
+    const sym  = poi.sym && !poi.icon_url ? `\n    <sym>${escapeXml(poi.sym)}</sym>` : '';
+
+    const customLink = poi.icon_url
+        ? `\n    <link href="${escapeXml(poi.icon_url)}">\n      <type>condottiero:customIcon</type>${
+              poi.link ? `\n      <text>${escapeXml(poi.link)}</text>` : ''
+          }\n    </link>\n    <type>condottiero:custom::0.35</type>`
+        : '';
+
+    return `  <wpt lat="${poi.lat}" lon="${poi.lon}">${ele}${name}${desc}${sym}${customLink}\n  </wpt>`;
 }
 
 function buildTrkptFromPoint(p: RoutePoint): string {
@@ -55,7 +62,6 @@ function buildTrkptFromPOI(poi: POI): string {
     return `      <trkpt lat="${poi.lat}" lon="${poi.lon}">${ele}\n      </trkpt>`;
 }
 
-// graphhopper routing
 async function getRouteBetween(
     from: POI,
     to: POI,
@@ -92,7 +98,6 @@ async function buildRoutedTrackPoints(pois: POI[], profile: string): Promise<Rou
 
     for (let i = 0; i < pois.length - 1; i++) {
         const segment = await getRouteBetween(pois[i], pois[i + 1], profile);
-        // avoid duplicate points at segment junctions
         if (i > 0 && allPoints.length > 0) {
             allPoints.push(...segment.slice(1));
         } else {
@@ -116,10 +121,8 @@ async function buildGPX(body: RequestBody): Promise<string> {
 
     const now = new Date().toISOString();
 
-    // waypoints (<wpt>)
     const waypoints = pois.map(buildWpt).join('\n');
 
-    // track (<trk>)
     let track = '';
     if (create_track && pois.length >= 2) {
         let trkpts: string;
@@ -129,7 +132,6 @@ async function buildGPX(body: RequestBody): Promise<string> {
                 const routePoints = await buildRoutedTrackPoints(pois, profile);
                 trkpts = routePoints.map(buildTrkptFromPoint).join('\n');
             } catch (e) {
-                // fallback to straight lines if routing fails
                 console.error('Routing failed, falling back to straight lines:', e);
                 trkpts = pois.map(buildTrkptFromPOI).join('\n');
             }
@@ -171,7 +173,6 @@ ${waypoints}${track}
 </gpx>`;
 }
 
-// validation
 function validatePOI(poi: unknown, index: number): POI {
     if (typeof poi !== 'object' || poi === null) {
         throw error(400, `pois[${index}]: must be an object`);
@@ -187,16 +188,17 @@ function validatePOI(poi: unknown, index: number): POI {
     return {
         lat,
         lon,
-        name: p.name != null ? String(p.name) : undefined,
-        desc: p.desc != null ? String(p.desc) : undefined,
-        ele:  p.ele  != null && !isNaN(Number(p.ele)) ? Number(p.ele) : undefined,
-        sym:  p.sym  != null ? String(p.sym)  : undefined,
+        name:     p.name     != null ? String(p.name)     : undefined,
+        desc:     p.desc     != null ? String(p.desc)     : undefined,
+        ele:      p.ele      != null && !isNaN(Number(p.ele)) ? Number(p.ele) : undefined,
+        sym:      p.sym      != null ? String(p.sym)      : undefined,
+        icon_url: p.icon_url != null ? String(p.icon_url) : undefined,
+        link:     p.link     != null ? String(p.link)     : undefined,
     };
 }
 
 const VALID_PROFILES = ['foot', 'bike', 'car', 'mtb', 'racingbike', 'hike'];
 
-// handler
 export const POST: RequestHandler = async ({ request }) => {
     let body: unknown;
 
@@ -266,7 +268,9 @@ export const GET: RequestHandler = async () => {
                     name: 'string (optional) — waypoint name',
                     desc: 'string (optional) — waypoint description',
                     ele: 'number (optional) — elevation in meters',
-                    sym: 'string (optional) — GPX symbol name, e.g. "Flag, Blue"',
+                    sym: 'string (optional) — GPX symbol name, e.g. "Flag, Blue" (ignorato se icon_url è presente)',
+                    icon_url: 'string (optional) — URL pubblico di un\'icona SVG per il waypoint, es. https://vassallo.insidegubbio.com/svg/pin/1.svg',
+                    link: 'string (optional) — URL dell\'articolo collegato al POI',
                 },
             ],
         },
@@ -276,11 +280,11 @@ export const GET: RequestHandler = async () => {
             create_track: true,
             routing: true,
             profile: 'foot',
-            color: '0055ff',
+            color: '2C3229',
             pois: [
-                { lat: 43.1122, lon: 12.3888, name: 'Fontana Maggiore', desc: 'Piazza IV Novembre', ele: 493 },
-                { lat: 43.1105, lon: 12.3910, name: 'Palazzo dei Priori', ele: 490 },
-                { lat: 43.1135, lon: 12.3875, name: 'Arco Etrusco', ele: 500 },
+                { lat: 43.1122, lon: 12.3888, name: 'Fontana Maggiore', desc: 'Piazza IV Novembre', ele: 493, icon_url: 'https://vassallo.insidegubbio.com/svg/pin/1.svg', link: 'https://www.insidegubbio.com/fontana-maggiore' },
+                { lat: 43.1105, lon: 12.3910, name: 'Palazzo dei Priori', ele: 490, icon_url: 'https://vassallo.insidegubbio.com/svg/pin/2.svg', link: 'https://www.insidegubbio.com/palazzo-dei-priori' },
+                { lat: 43.1135, lon: 12.3875, name: 'Arco Etrusco', ele: 500, icon_url: 'https://vassallo.insidegubbio.com/svg/pin/3.svg', link: 'https://www.insidegubbio.com/arco-etrusco' },
             ],
         },
     });
