@@ -173,6 +173,18 @@
         @apply bottom-[42px];
     }
 
+     div :global(.maplibregl-ctrl-attrib-inner) {
+        display: none;
+    }
+    
+    div :global(.maplibregl-compact-show .maplibregl-ctrl-attrib-inner) {
+        display: block;
+    }
+    
+    div :global(.maplibregl-ctrl-attrib-button) {
+        display: block !important;
+    }
+
     .horizontal :global(.maplibregl-ctrl-bottom-right) {
         @apply bottom-[42px];
     }
