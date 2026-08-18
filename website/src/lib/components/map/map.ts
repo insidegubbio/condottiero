@@ -132,14 +132,6 @@ export class MapLibreGLMap {
             window._map = map;
             this.resize();
             scaleControl.setUnit(get(distanceUnits));
-            const attrib = document.querySelector('.maplibregl-ctrl-attrib');
-            if (attrib) {
-                attrib.classList.remove('maplibregl-compact-show');
-                this._attribObserver = new MutationObserver(() => {
-                    attrib.classList.remove('maplibregl-compact-show');
-                });
-                this._attribObserver.observe(attrib, { attributes: true, attributeFilter: ['class'] });
-            }
         });
         map.on('style.load', this.callOnLoadBinded);
 
