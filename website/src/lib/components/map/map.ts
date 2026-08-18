@@ -57,7 +57,7 @@ export class MapLibreGLMap {
             boxZoom: false,
             maxPitch: 90,
             cooperativeGestures: cooperativeGestures,
-            attributionControl: { compact: true },
+            attributionControl: false,
             locale: {
                 'CooperativeGesturesHandler.WindowsHelpText': 'usa ctrl + scroll per muovere la mappa',
                 'CooperativeGesturesHandler.MacHelpText': 'usa ⌘ + scroll per muovere la mappa',
@@ -69,6 +69,10 @@ export class MapLibreGLMap {
             new maplibregl.NavigationControl({
                 visualizePitch: true,
             })
+        );
+        map.addControl(
+            new maplibregl.AttributionControl({ compact: true }),
+            'bottom-right'
         );
         if (geocoder) {
             let geocoder = new MaplibreGeocoder(
