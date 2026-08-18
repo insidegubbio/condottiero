@@ -57,6 +57,7 @@ export class MapLibreGLMap {
             boxZoom: false,
             maxPitch: 90,
             cooperativeGestures: cooperativeGestures,
+            attributionControl: { compact: true },
             locale: {
                 'CooperativeGesturesHandler.WindowsHelpText': 'usa ctrl + scroll per muovere la mappa',
                 'CooperativeGesturesHandler.MacHelpText': 'usa ⌘ + scroll per muovere la mappa',
