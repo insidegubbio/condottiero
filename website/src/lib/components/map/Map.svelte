@@ -177,33 +177,12 @@
         @apply bottom-[42px];
     }
 
-    div :global(.maplibregl-ctrl-attrib) {
-        @apply dark:bg-transparent;
+    div :global(.maplibregl-ctrl-attrib.maplibregl-compact-show .maplibregl-ctrl-attrib-inner) {
+        display: none !important;
     }
-
-    div :global(.maplibregl-compact-show.maplibregl-ctrl-attrib) {
-        @apply dark:bg-background;
-    }
-
-    div :global(.maplibregl-ctrl-attrib-inner) {
-        display: none;
-    }
-
-    div :global(.maplibregl-compact-show .maplibregl-ctrl-attrib-inner) {
-        display: block;
-    }
-
+    
     div :global(.maplibregl-ctrl-attrib-button) {
         display: block !important;
-        @apply dark:bg-foreground;
-    }
-
-    div :global(.maplibregl-compact-show .maplibregl-ctrl-attrib-button) {
-        @apply dark:bg-foreground;
-    }
-
-    div :global(.maplibregl-ctrl-attrib a) {
-        @apply text-foreground;
     }
 
     div :global(.maplibregl-popup) {
