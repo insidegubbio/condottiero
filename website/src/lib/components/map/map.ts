@@ -25,6 +25,7 @@ export class MapLibreGLMap {
     private _styleManager: StyleManager | null = null;
     private _onLoadCallbacks: ((map: maplibregl.Map) => void)[] = [];
     private _unsubscribes: (() => void)[] = [];
+    private _attribObserver: MutationObserver | null = null;
     private callOnLoadBinded: () => void = this.callOnLoad.bind(this);
     public layerEventManager: MapLayerEventManager | null = null;
 
@@ -127,10 +128,18 @@ export class MapLibreGLMap {
         map.addControl(scaleControl);
         map.on('load', () => {
             this._map = map;
-            this._mapStore.set(map); // only set the store after the map has loaded
-            window._map = map; // entry point for extensions
+            this._mapStore.set(map);
+            window._map = map;
             this.resize();
             scaleControl.setUnit(get(distanceUnits));
+            const attrib = document.querySelector('.maplibregl-ctrl-attrib');
+            if (attrib) {
+                attrib.classList.remove('maplibregl-compact-show');
+                this._attribObserver = new MutationObserver(() => {
+                    attrib.classList.remove('maplibregl-compact-show');
+                });
+                this._attribObserver.observe(attrib, { attributes: true, attributeFilter: ['class'] });
+            }
         });
         map.on('style.load', this.callOnLoadBinded);
 
@@ -146,6 +155,8 @@ export class MapLibreGLMap {
     }
 
     destroy() {
+        this._attribObserver?.disconnect();
+        this._attribObserver = null;
         if (this._map) {
             this._map.remove();
             this._mapStore.set(null);
