@@ -351,7 +351,7 @@
             <Label>
                 {i18n._('embedding.preview')}
             </Label>
-            <div class="relative h-[600px]">
+            <div class="relative h-[1000px]">
                 <Embedding options={iframeOptions} bind:hash useHash={false} />
             </div>
             <Label>
@@ -359,7 +359,7 @@
             </Label>
             <pre class="bg-primary text-primary-foreground p-3 rounded-md whitespace-normal break-all">
                 <code class="language-html">
-                    {`<iframe src="https://condottiero.insidegubbio.com${base}/it/embed?options=${encodeURIComponent(JSON.stringify(getCleanedEmbeddingOptions(iframeOptions)))}${hash}" width="100%" height="600px" frameborder="0" style="outline: none;"/>`}
+                    {`<iframe src="https://condottiero.insidegubbio.com${base}/it/embed?options=${encodeURIComponent(JSON.stringify(getCleanedEmbeddingOptions(iframeOptions)))}${hash}" width="100%" height="1000px" allow="geolocation" frameborder="0" style="outline: none;"/>`}
                 </code>
             </pre>
         </fieldset>
