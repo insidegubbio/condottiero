@@ -1084,7 +1084,7 @@ export const defaultBasemapTree: LayerTreeType = {
                 ignFrSatellite: false,
             },
             italy: {
-                cartografo: false,
+                cartografo: true,
             },
             new_zealand: {
                 linz: false,
