@@ -45,10 +45,9 @@ export class MapLibreGLMap {
         this._styleManager = new StyleManager(this._mapStore, this._maptilerKey);
     
         const cooperativeGesturesHintShownKey = 'gpxstudio_cooperative_gestures_hint_shown';
-        const hintVista =
+        const hintAlreadyShown =
             typeof localStorage !== 'undefined' &&
             localStorage.getItem(cooperativeGesturesHintShownKey) === 'true';
-        const effectiveCooperativeGestures = cooperativeGestures && !hintVista;
     
         const map = new maplibregl.Map({
             container: 'map',
@@ -64,7 +63,7 @@ export class MapLibreGLMap {
             hash: hash,
             boxZoom: false,
             maxPitch: 90,
-            cooperativeGestures: effectiveCooperativeGestures,
+            cooperativeGestures: cooperativeGestures,
             attributionControl: false,
             locale: {
                 'CooperativeGesturesHandler.WindowsHelpText': 'usa ctrl + scroll per muovere la mappa',
@@ -73,12 +72,17 @@ export class MapLibreGLMap {
             },
         });
     
-        if (effectiveCooperativeGestures) {
+        // if the hint was shown already do not show it an another time
+        if (cooperativeGestures && hintAlreadyShown) {
+            map.getContainer().classList.add('hide-cooperative-gesture-hint');
+        }
+    
+        if (cooperativeGestures && !hintAlreadyShown) {
             map.once('cooperativegestureprevented', () => {
                 if (typeof localStorage !== 'undefined') {
                     localStorage.setItem(cooperativeGesturesHintShownKey, 'true');
                 }
-                map.setCooperativeGestures(false);
+                map.getContainer().classList.add('hide-cooperative-gesture-hint');
             });
         }
     
