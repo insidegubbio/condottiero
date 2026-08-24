@@ -107,6 +107,10 @@
         @apply text-foreground;
     }
 
+    div :global(.hide-cooperative-gesture-hint .maplibregl-cooperative-gesture-screen) {
+        display: none !important;
+    }
+
     div :global(.maplibregl-ctrl-geocoder .suggestions > li > a) {
         @apply text-foreground;
         @apply hover:text-accent-foreground;
