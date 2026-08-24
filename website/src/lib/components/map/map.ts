@@ -43,6 +43,13 @@ export class MapLibreGLMap {
     ) {
         this._maptilerKey = maptilerKey;
         this._styleManager = new StyleManager(this._mapStore, this._maptilerKey);
+    
+        const cooperativeGesturesHintShownKey = 'gpxstudio_cooperative_gestures_hint_shown';
+        const hintVista =
+            typeof localStorage !== 'undefined' &&
+            localStorage.getItem(cooperativeGesturesHintShownKey) === 'true';
+        const effectiveCooperativeGestures = cooperativeGestures && !hintVista;
+    
         const map = new maplibregl.Map({
             container: 'map',
             style: {
@@ -57,7 +64,7 @@ export class MapLibreGLMap {
             hash: hash,
             boxZoom: false,
             maxPitch: 90,
-            cooperativeGestures: cooperativeGestures,
+            cooperativeGestures: effectiveCooperativeGestures,
             attributionControl: false,
             locale: {
                 'CooperativeGesturesHandler.WindowsHelpText': 'usa ctrl + scroll per muovere la mappa',
@@ -65,6 +72,16 @@ export class MapLibreGLMap {
                 'CooperativeGesturesHandler.MobileHelpText': 'usa due dita per muovere la mappa',
             },
         });
+    
+        if (effectiveCooperativeGestures) {
+            map.once('cooperativegestureprevented', () => {
+                if (typeof localStorage !== 'undefined') {
+                    localStorage.setItem(cooperativeGesturesHintShownKey, 'true');
+                }
+                map.setCooperativeGestures(false);
+            });
+        }
+    
         this.layerEventManager = new MapLayerEventManager(map);
         map.addControl(
             new maplibregl.NavigationControl({
